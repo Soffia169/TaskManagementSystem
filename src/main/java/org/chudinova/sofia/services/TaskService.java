@@ -10,7 +10,6 @@ import org.chudinova.sofia.models.responses.TaskResponse;
 import org.chudinova.sofia.models.responses.UserInfo;
 import org.chudinova.sofia.repositories.*;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
