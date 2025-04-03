@@ -5,7 +5,7 @@
 
 ## 🛠 Технологии
 
-- **Java 17**
+- **Java 18**
 - **Spring Boot 3.4.2**
 - Spring Security
 - Spring Data JPA
