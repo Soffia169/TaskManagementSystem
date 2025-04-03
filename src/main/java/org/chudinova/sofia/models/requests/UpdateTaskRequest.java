@@ -1,10 +1,11 @@
 package org.chudinova.sofia.models.requests;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateTaskRequest {
     private long taskId;
     private String title;

@@ -1,29 +1,33 @@
-version: '3.9'
-
 services:
   backend:
+    container_name: task_app
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8084:8084"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/TaskManagementSystem
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/TaskManagementSystem
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=secret
+      - JWT_SECRET=53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
     depends_on:
-      - db
+      - postgres
     networks:
       - app-network
 
-  db:
-    image: postgres:15-alpine
+  postgres:
+    image: postgres:14-alpine
+    container_name: task_db
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./db/init-data.sql:/docker-entrypoint-initdb.d/01-init-data.sql
     environment:
-      - POSTGRES_DB=mydb
+      - POSTGRES_DB=TaskManagementSystem
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=secret
+    ports:
+      - "5432:5432"
     networks:
       - app-network
 

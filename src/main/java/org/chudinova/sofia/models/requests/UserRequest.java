@@ -1,10 +1,11 @@
 package org.chudinova.sofia.models.requests;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequest {
     private String username;
     private String email;

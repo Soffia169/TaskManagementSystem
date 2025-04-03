@@ -24,7 +24,7 @@ public class UserService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RoleNotFoundException("Role with name 'ROLE_USER' not found")))
+                .role(roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new RoleNotFoundException("Role with name 'ROLE_ADMIN' not found")))
                 .build();
         userRepository.save(user);
     }
