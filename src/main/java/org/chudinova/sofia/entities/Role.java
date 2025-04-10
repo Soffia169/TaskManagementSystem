@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "roles")
 @NoArgsConstructor

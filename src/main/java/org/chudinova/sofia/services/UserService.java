@@ -2,6 +2,7 @@ package org.chudinova.sofia.services;
 
 import lombok.RequiredArgsConstructor;
 import org.chudinova.sofia.entities.User;
+import org.chudinova.sofia.exceptions.InvalidRequestException;
 import org.chudinova.sofia.exceptions.RoleNotFoundException;
 import org.chudinova.sofia.models.requests.RegisterRequest;
 import org.chudinova.sofia.repositories.RoleRepository;
@@ -24,12 +25,16 @@ public class UserService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new RoleNotFoundException("Role with name 'ROLE_ADMIN' not found")))
+                .role(roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RoleNotFoundException("Role with name 'ROLE_ADMIN' not found")))
                 .build();
         userRepository.save(user);
     }
 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

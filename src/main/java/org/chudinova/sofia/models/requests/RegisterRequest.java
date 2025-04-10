@@ -1,5 +1,7 @@
 package org.chudinova.sofia.models.requests;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,12 +13,15 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
-    @NonNull
+    @NotNull
+    @NotBlank
     private String username;
 
-    @NonNull
+    @NotNull
+    @NotBlank
     private String email;
 
-    @NonNull
+    @NotNull
+    @NotBlank
     private String password;
 }

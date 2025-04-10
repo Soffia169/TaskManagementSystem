@@ -8,7 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "comments")
 @NoArgsConstructor

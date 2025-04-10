@@ -48,13 +48,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(request -> {
                 var corsConfiguration = new CorsConfiguration();
                 corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-                corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                corsConfiguration.setAllowedMethods(List.of("*"));
                 corsConfiguration.setAllowedHeaders(List.of("*"));
                 corsConfiguration.setAllowCredentials(true);
                 return corsConfiguration;
             }))
             .authorizeHttpRequests(request -> request
-                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/auth/**",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**",
+                            "/swagger-resources/**"
+                            ).permitAll()
                     .requestMatchers("/api/tasks/newTask",
                                     "/api/tasks/deleteTask",
                                     "/api/tasks/getTasksByAuthor",
