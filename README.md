@@ -15,6 +15,7 @@
 - Maven
 - Docker
 - OpenAPI/Swagger
+- JavaDoc
 
 ## 📋 Требования
 
