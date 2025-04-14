@@ -14,6 +14,7 @@
 - Lombok
 - Maven
 - Docker
+- OpenAPI/Swagger
 
 ## 📋 Требования
 
