@@ -1,6 +1,5 @@
 package org.chudinova.sofia.models.requests;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -11,8 +10,7 @@ import lombok.*;
 public class UpdateTaskRequest {
 
     @NotNull
-    @NotBlank
-    private long taskId;
+    private Long taskId;
     private String title;
     private String description;
     private Long assigneeId;

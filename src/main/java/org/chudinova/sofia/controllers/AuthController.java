@@ -9,12 +9,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.chudinova.sofia.config.JwtUtils;
-import org.chudinova.sofia.errors.AppError;
 import org.chudinova.sofia.exceptions.InvalidRequestException;
 import org.chudinova.sofia.exceptions.UnauthorizedException;
 import org.chudinova.sofia.models.requests.AuthRequest;
 import org.chudinova.sofia.models.requests.RegisterRequest;
+import org.chudinova.sofia.models.responses.InvalidRequestExceptionResponse;
 import org.chudinova.sofia.models.responses.JwtResponse;
+import org.chudinova.sofia.models.responses.UnauthorizedExceptionResponse;
+import org.chudinova.sofia.models.responses.UserInfo;
 import org.chudinova.sofia.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +24,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.ErrorResponse;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
+/**
+ * Контроллер для управления аутентификацией пользователей
+ */
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Аутентификация", description = "Регистрация и вход в систему")
@@ -45,6 +43,13 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final UserService userService;
 
+    /**
+     * Вход пользователя в систему
+     * @param request DTO с данными для входа
+     * @return Ответ с JWT-токеном
+     * @throws InvalidRequestException если введены некорректные данные
+     * @throws UnauthorizedException если введены неверные учётные данные
+     */
     @Operation(
             summary = "Аутентификация пользователя",
             description = "Вход в систему"
@@ -56,25 +61,18 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = JwtResponse.class))
             ),
             @ApiResponse(
-                    responseCode = "401",
+                    responseCode = "400",
                     description = "Некорректные данные",
-                    content = @Content(schema = @Schema(implementation = UnauthorizedException.class))
+                    content = @Content(schema = @Schema(implementation = InvalidRequestExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Неверные учётные данные",
+                    content = @Content(schema = @Schema(implementation = UnauthorizedExceptionResponse.class))
             )
     })
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login (
-            @RequestBody @Valid
-            @Schema(
-                    description = "Данные для входа",
-                    example = """
-                        {
-                            "email": "user@example.com",
-                            "password": "P@ssw0rd"
-                        }
-                        """
-            )
-            AuthRequest request
-    ) {
+    public ResponseEntity<JwtResponse> login (@RequestBody @Valid AuthRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -90,44 +88,36 @@ public class AuthController {
         }
     }
 
+    /**
+     * Регистрация нового пользователя в системе
+     * @param request DTO с данными для регистрации
+     * @return DTO созданного пользователя
+     * @throws InvalidRequestException если введены некорректные данные
+     */
     @Operation(
             summary = "Регистрация пользователя",
             description = "Создание нового пользователя в системе"
     )
     @ApiResponses({
             @ApiResponse(
-                    responseCode = "200",
-                    description = "Успешная регистрация"
+                    responseCode = "201",
+                    description = "Успешная регистрация",
+                    content = @Content(schema = @Schema(implementation = UserInfo.class))
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Некорректные данные",
-                    content = @Content(schema = @Schema(implementation = InvalidRequestException.class))
+                    content = @Content(schema = @Schema(implementation = InvalidRequestExceptionResponse.class))
             )
     })
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @Valid @RequestBody
-            @Schema(description = "Данные для регистрации", example = "{\"username\": \"user\", \"email\": " +
-                    "\"user@example.com\", \"password\": \"P@ssw0rd\"}")
-            RegisterRequest request
-    ) {
-        if (request.getUsername() == null) {
-            throw new InvalidRequestException("Username cannot be null");
-        }
-        if (request.getPassword() == null) {
-            throw new InvalidRequestException("Password cannot be null");
-        }
-        if (request.getEmail() == null) {
-            throw new InvalidRequestException("Email cannot be null");
-        }
+    public ResponseEntity<UserInfo> register(@Valid @RequestBody RegisterRequest request) {
         if (userService.existsByEmail(request.getEmail())) {
             throw new InvalidRequestException("Email '" + request.getEmail() + "' is already taken");
         }
         if (userService.existsByUsername(request.getUsername())) {
             throw new InvalidRequestException("Username '" + request.getUsername() + "' is already taken");
         }
-        userService.createUser(request);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(userService.createUser(request), HttpStatus.CREATED);
     }
 }

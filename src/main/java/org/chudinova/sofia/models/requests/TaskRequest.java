@@ -1,5 +1,6 @@
 package org.chudinova.sofia.models.requests;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Schema(
+        description = "Данные новой задачи",
+        example = """
+                {
+                    "title": "Task_1",
+                    "description": "Описание задачи",
+                    "assigneeId": 1,
+                    "status": 1,
+                    "priority": 2
+                }
+                """
+)
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,14 +36,11 @@ public class TaskRequest {
     private String description;
 
     @NotNull
-    @NotBlank
-    private long assigneeId;
+    private Long assigneeId;
 
     @NotNull
-    @NotBlank
-    private int statusId;
+    private Integer statusId;
 
     @NotNull
-    @NotBlank
-    private int priorityId;
+    private Integer priorityId;
 }

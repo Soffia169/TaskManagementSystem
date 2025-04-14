@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Сервис для работы с задачами
+ */
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -29,8 +32,6 @@ public class TaskService {
 
     @Transactional
     public TaskResponse createTask(TaskRequest request, User currentUser) {
-        validateRequest(request);
-
         User assignee = userRepository.findById(request.getAssigneeId())
                 .orElseThrow(() -> new UserNotFoundException("User with id " + request.getAssigneeId() + " not found"));
         Status status = statusRepository.findById(request.getStatusId())
@@ -99,9 +100,9 @@ public class TaskService {
     }
 
     @Transactional
-    public void deleteTask(TaskRequest request) {
-        Task task = taskRepository.findById(request.getTaskId())
-                .orElseThrow(() -> new TaskNotFoundException("Task with id '" + request.getTaskId() +"' not found"));
+    public void deleteTask(long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task with id '" + taskId +"' not found"));
         taskRepository.delete(task);
     }
 
@@ -145,16 +146,6 @@ public class TaskService {
                 .id(user.getId())
                 .name(user.getUsername())
                 .build();
-    }
-
-    private void validateRequest(TaskRequest request) {
-        if (request.getTitle() == null || request.getTitle().isBlank()) {
-            throw new InvalidRequestException("Заголовок задачи обязателен");
-        }
-
-        if (request.getTitle().length() > 255) {
-            throw new InvalidRequestException("Заголовок не должен превышать 255 символов");
-        }
     }
 
     private void updateAdminFields(Task task, UpdateTaskRequest request, User user) {
